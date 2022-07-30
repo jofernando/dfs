@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, send_file
 import matplotlib.pyplot as plt
 import networkx as nx
 
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -13,6 +14,11 @@ def hello_world():
 @app.route('/enviar', methods=['POST'])
 def salvar():
     nodes = set()
+    nodes.update(request.form.getlist('nomeVertice[]'))
+    graph = Graph()
+    for a, b in zip(request.form.getlist('uVertice[]'), request.form.getlist('vVertice[]')):
+        graph.add_edge(a, b)
+    path = graph.dfs_path(request.form('partidaVertice'), request.form('destinoVertice'))
     route_edges = [(path[n], path[n+1]) for n in range(len(path)-1)]
     pos = nx.spring_layout(graph)
     nodes = [0,1,2,3,4]
