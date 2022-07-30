@@ -19,7 +19,7 @@ def salvar():
     graph.add_nodes_from(nodes)
     for a, b in zip(request.form.getlist('uVertice[]'), request.form.getlist('vVertice[]')):
         graph.add_edge(a, b)
-    path = graph.dfs_path(request.form['partidaVertice'], request.form['destinoVertice'])
+    path = graph.dfs_path(request.form['partidaVertice'], request.form['destinoVertice'], path=[], visited=set())
     route_edges = [(path[n], path[n + 1]) for n in range(len(path) - 1)]
     pos = nx.spring_layout(graph)
     nodes = graph.nodes
