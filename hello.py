@@ -20,4 +20,5 @@ def salvar():
     nx.draw(graph, with_labels=True, font_weight='bold')
     filename = datetime.now().strftime("graphs/%Y%m%d%H%M%S") + '.png'
     plt.savefig(filename)
+    plt.clf()
     return send_file(filename, mimetype='image/gif')
