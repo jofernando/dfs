@@ -6,7 +6,7 @@ class Graph(nx.Graph):
         visited.add(start)
         if start == target:
             return path
-        for (neighbour) in self.adj[start]:
+        for neighbour in self.adj[start]:
             if neighbour not in visited:
                 result = self.dfs_path(neighbour, target, path, visited)
                 if result is not None:
