@@ -16,18 +16,22 @@ def salvar():
     nodes = set()
     nodes.update(request.form.getlist('nomeVertice[]'))
     graph = Graph()
+    graph.add_nodes_from(nodes)
     for a, b in zip(request.form.getlist('uVertice[]'), request.form.getlist('vVertice[]')):
         graph.add_edge(a, b)
-    path = graph.dfs_path(request.form('partidaVertice'), request.form('destinoVertice'))
-    route_edges = [(path[n], path[n+1]) for n in range(len(path)-1)]
+    path = graph.dfs_path(request.form['partidaVertice'], request.form['destinoVertice'])
+    route_edges = [(path[n], path[n + 1]) for n in range(len(path) - 1)]
     pos = nx.spring_layout(graph)
-    nodes = [0,1,2,3,4]
-    nx.draw_networkx_nodes(graph, pos=pos, nodelist=nodes, node_color=[(0.8,0.4,0.9),'y','y','y','g'])
-    nx.draw_networkx_labels(graph, pos=pos)
+    nodes = graph.nodes
+    colours = [(0.18, 0.03, 0.37)] * len(nodes)
+    colours = dict(zip(nodes, colours))
+    colours[request.form['partidaVertice']] = (0, 0.49, 0.51)
+    colours[request.form['destinoVertice']] = (0.92, 0.36, 0.36)
+    nx.draw_networkx_nodes(graph, pos=pos, nodelist=nodes, node_size=400)
+    nx.draw_networkx_labels(graph, pos=pos, font_color='w')
     nx.draw_networkx_edges(graph, pos=pos, edgelist=graph.edges)
     nx.draw_networkx_edges(graph, pos=pos, edgelist=route_edges, edge_color = 'r')
     filename = datetime.now().strftime("graphs/%Y%m%d%H%M%S") + '.png'
-    plt.legend(['partida', '', 'caminho', 'destino'])
     plt.savefig(filename)
     plt.clf()
     return send_file(filename, mimetype='image/gif')
