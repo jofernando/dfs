@@ -13,25 +13,43 @@ def hello_world():
 
 @app.route('/enviar', methods=['POST'])
 def salvar():
+    graph = criar_grafo(request.form)
+    nodes = graph.nodes
+    partida = request.form['partidaVertice']
+    destino = request.form['destinoVertice']
+    path = graph.dfs_path(partida, destino, path=[], visited=set())
+    colours = criar_cores(nodes, partida, destino)
+    desenhar_grafo_com_caminho(graph, colours, path)
+    filename = salvar_arquivo()
+    return send_file(filename, mimetype='image/gif')
+
+def criar_grafo(form):
     nodes = set()
-    nodes.update(request.form.getlist('nomeVertice[]'))
+    nodes.update(form.getlist('nomeVertice[]'))
     graph = Graph()
     graph.add_nodes_from(nodes)
-    for a, b in zip(request.form.getlist('uVertice[]'), request.form.getlist('vVertice[]')):
+    for a, b in zip(form.getlist('uVertice[]'), form.getlist('vVertice[]')):
         graph.add_edge(a, b)
-    path = graph.dfs_path(request.form['partidaVertice'], request.form['destinoVertice'], path=[], visited=set())
-    route_edges = [(path[n], path[n + 1]) for n in range(len(path) - 1)]
-    pos = nx.spring_layout(graph)
-    nodes = graph.nodes
+    return graph
+
+def criar_cores(nodes, partida, destino):
     colours = [(0.18, 0.03, 0.37)] * len(nodes)
     colours = dict(zip(nodes, colours))
-    colours[request.form['partidaVertice']] = (0, 0.49, 0.51)
-    colours[request.form['destinoVertice']] = (0.92, 0.36, 0.36)
-    nx.draw_networkx_nodes(graph, pos=pos, nodelist=nodes, node_size=400)
-    nx.draw_networkx_labels(graph, pos=pos, font_color='w')
-    nx.draw_networkx_edges(graph, pos=pos, edgelist=graph.edges)
-    nx.draw_networkx_edges(graph, pos=pos, edgelist=route_edges, edge_color = 'r')
+    colours[partida] = (0, 0.49, 0.51)
+    colours[destino] = (0.92, 0.36, 0.36)
+    return [*colours.values()]
+
+def salvar_arquivo():
     filename = datetime.now().strftime("graphs/%Y%m%d%H%M%S") + '.png'
     plt.savefig(filename)
     plt.clf()
-    return send_file(filename, mimetype='image/gif')
+    return filename
+
+def desenhar_grafo_com_caminho(graph, colours, path):
+    route_edges = [(path[n], path[n + 1]) for n in range(len(path) - 1)]
+    pos = nx.spring_layout(graph)
+    nodes = graph.nodes
+    nx.draw_networkx_nodes(graph, pos=pos, nodelist=nodes, node_color=colours, node_size=400)
+    nx.draw_networkx_labels(graph, pos=pos, font_color='w')
+    nx.draw_networkx_edges(graph, pos=pos, edgelist=graph.edges)
+    nx.draw_networkx_edges(graph, pos=pos, edgelist=route_edges, edge_color = 'r')
