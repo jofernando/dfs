@@ -10,6 +10,8 @@ class Graph(nx.Graph):
             if neighbour not in visited:
                 result = self.dfs_path(neighbour, target, path, visited)
                 if result is not None:
+                    path = []
+                    visited = set()
                     return result
         path.pop()
         return None
