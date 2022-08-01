@@ -15,15 +15,36 @@ def hello_world():
 
 @app.route('/enviar', methods=['POST'])
 def salvar():
-    graph = criar_grafo(request.form)
-    nodes = graph.nodes
-    partida = request.form['partidaVertice']
-    destino = request.form['destinoVertice']
-    path = graph.dfs_path(partida, destino, path=[], visited=set())
-    colours = criar_cores(nodes, partida, destino)
-    desenhar_grafo_com_caminho(graph, colours, path)
-    filename = salvar_arquivo()
-    return send_file(filename, mimetype='image/gif')
+    errors = []
+    if(validate(request.form, errors)):
+        graph = criar_grafo(request.form)
+        nodes = graph.nodes
+        partida = request.form['partidaVertice']
+        destino = request.form['destinoVertice']
+        path = graph.dfs_path(partida, destino, path=[], visited=set())
+        if (path is None):
+            errors.append('Nenhum caminho encontrado para o ponto de partida e destino informados')
+            return render_template('hello.html', errors=errors)
+        colours = criar_cores(nodes, partida, destino)
+        desenhar_grafo_com_caminho(graph, colours, path)
+        filename = salvar_arquivo()
+        return send_file(filename, mimetype='image/gif')
+    return render_template('hello.html', errors=errors)
+
+def validate(form, errors):
+    valid = True
+    nodes = set()
+    nodes.update(form.getlist('nomeVertice[]'))
+    if(len(nodes) < 2):
+        valid = False
+        errors.append('A quantidade de vertices não pode ser menor que 2')
+    if(form['partidaVertice'] not in nodes):
+        valid = False
+        errors.append('O vertice de partida precisa estar na declaração dos vertices')
+    if(form['destinoVertice'] not in nodes):
+        valid = False
+        errors.append('O vertice de destino precisa estar na declaração dos vertices')
+    return valid
 
 def criar_grafo(form):
     nodes = set()

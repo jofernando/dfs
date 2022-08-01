@@ -49,6 +49,11 @@
         </div>
     </nav>
     <div class="container" style="padding: 30px; padding-top: 2rem;">
+        {% for error in errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
         <form x-data="handler()" method='post' action="/enviar">
             <div class="row">
                 <div class="col-md-12">
