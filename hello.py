@@ -1,6 +1,8 @@
 from datetime import datetime
 from dfs import Graph
 from flask import Flask, render_template, request, send_file
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import networkx as nx
 
