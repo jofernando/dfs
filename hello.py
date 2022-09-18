@@ -21,7 +21,7 @@ def salvar():
         nodes = graph.nodes
         partida = request.form['partidaVertice']
         destino = request.form['destinoVertice']
-        path = graph.dfs_path(partida, destino, path=[], visited=set())
+        path = graph.a_star_path(partida, destino)
         if (path is None):
             errors.append('Nenhum caminho encontrado para o ponto de partida e destino informados')
             return render_template('hello.html', errors=errors)
@@ -51,8 +51,8 @@ def criar_grafo(form):
     nodes.update(form.getlist('nomeVertice[]'))
     graph = Graph()
     graph.add_nodes_from(nodes)
-    for a, b in zip(form.getlist('uVertice[]'), form.getlist('vVertice[]')):
-        graph.add_edge(a, b)
+    for a, b, c in zip(form.getlist('uVertice[]'), form.getlist('vVertice[]'), form.getlist('pesos[]')):
+        graph.add_edge(a, b, weight=float(c))
     return graph
 
 def criar_cores(nodes, partida, destino):
@@ -74,5 +74,8 @@ def desenhar_grafo_com_caminho(graph, colours, path):
     nodes = graph.nodes
     nx.draw_networkx_nodes(graph, pos=pos, nodelist=nodes, node_color=colours, node_size=400)
     nx.draw_networkx_labels(graph, pos=pos, font_color='w')
-    nx.draw_networkx_edges(graph, pos=pos, edgelist=graph.edges)
+    nx.draw_networkx_edges(graph, pos=pos, edgelist=graph.edges, edge_color=(0.8,0.8,0.85))
     nx.draw_networkx_edges(graph, pos=pos, edgelist=route_edges, edge_color = 'r')
+
+    edge_labels = nx.get_edge_attributes(graph, "weight")
+    nx.draw_networkx_edge_labels(graph, pos, edge_labels)

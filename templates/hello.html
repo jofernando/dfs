@@ -133,7 +133,7 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <label :for="'u_vertice' + index">vértice <span class="font-weight-bold">"u"</span>:</label>
                                             <input type="text" style="margin-bottom:10px;"
                                             class="form-control text-center"
@@ -142,13 +142,22 @@
                                             x-model="aresta.u"
                                             required>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <label :for="'v_vertice' + index">vértice <span class="font-weight-bold">"v"</span>:</label>
                                             <input type="text" style="margin-bottom:10px;"
                                             class="form-control text-center"
                                             name="vVertice[]"
                                             :id="'v_vertice' + index"
                                             x-model="aresta.v"
+                                            required>
+                                        </div>
+                                        <div class="col-md-4 d-flex justify-content-between flex-column">
+                                            <label :for="'peso' + index">custo:</label>
+                                            <input type="text" style="margin-bottom:10px;"
+                                            class="form-control text-center"
+                                            name="pesos[]"
+                                            :id="'peso' + index"
+                                            x-model="aresta.peso"
                                             required>
                                         </div>
                                     </div>
@@ -233,7 +242,7 @@
             arestasInicial = [{
                 u: '',
                 v: '',
-                peso: 0
+                peso: 1
             }];
 
             return {
@@ -251,7 +260,7 @@
                     this.arestas.push({
                         u: '',
                         v: '',
-                        peso: 0
+                        peso: 1
                     });
                 },
                 removerAresta(index) {
